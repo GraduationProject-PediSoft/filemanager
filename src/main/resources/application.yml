@@ -1,0 +1,24 @@
+eureka:
+  client:
+    enabled: false
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+spring:
+  application:
+    name: file-manager
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+
+minio:
+  bucket_name: pedisoft
+  default_folder: /
+  username: ${MINIO_USERNAME}
+  secret: ${MINIO_SECRET}
+  url: ${MINIO_URL}
