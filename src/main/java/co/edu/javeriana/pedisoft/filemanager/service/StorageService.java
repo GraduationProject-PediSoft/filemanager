@@ -4,25 +4,20 @@ import co.edu.javeriana.pedisoft.filemanager.config.minio.MinioEntityConfig;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.UploadObjectArgs;
-import io.minio.errors.*;
+import io.minio.errors.ErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @Service
@@ -34,7 +29,11 @@ public class StorageService {
     @Autowired
     private MinioEntityConfig minioConfig;
 
-
+    /**
+     * Uploads file on Minio storage
+     * @param file File to upload
+     * @return a unique identifier for the file uploaded that can be used to download the resource
+     */
     public String upload(MultipartFile file){
         val filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
         try {
@@ -55,7 +54,11 @@ public class StorageService {
         return filename;
     }
 
-
+    /**
+     * Load Resource from Minio Storage
+     * @param filename The unique identifier for the resource
+     * @return a resource instance that contains the desired object
+     */
     public Resource loadAsResource(String filename) {
         try (InputStream obj = minioClient.getObject(GetObjectArgs.builder().bucket(minioConfig.getBucket_name())
                 .object(minioConfig.getDefault_folder()+"/"+filename)

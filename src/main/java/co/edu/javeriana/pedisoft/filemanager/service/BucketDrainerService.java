@@ -22,7 +22,12 @@ public class BucketDrainerService {
     @Autowired
     private MinioEntityConfig minioConfig;
 
-    @Scheduled(fixedRate = 60000 * 5)  // 5 Minutos (60000 milis es un minuto)
+    /**
+     * This method runs every 5 minutes, and it checks the objects inside minio storage
+     * This method ensures the removal of personal info in the system
+     * In the worst case, the object lives 10 minutes
+     */
+    @Scheduled(fixedRate = 60000 * 5)  // 5 Minutes (60000 millis is a minute)
     private void bucketPurge(){
         log.info("Starting pruning...");
         val objects =  minioClient.listObjects(ListObjectsArgs.builder()
@@ -41,10 +46,10 @@ public class BucketDrainerService {
                     minioClient.removeObject(RemoveObjectArgs.builder()
                             .bucket(minioConfig.getBucket_name()).object(objectName).build());
                 }
-                log.info("Prune completed, next will be in 5 minutes");
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
         });
+        log.info("Prune completed, next will be in 5 minutes");
     }
 }

@@ -19,6 +19,11 @@ public class MinioBucketChecker implements ApplicationRunner {
     @Autowired
     private MinioEntityConfig minioConfig;
 
+    /**
+     * Executes on startup and checks the Minio Server if the bucket exists, if no, the service creates it
+     * @param args cli args
+     * @throws Exception
+     */
     @Override
     public void run(ApplicationArguments args) throws Exception{
         final var found =  minioClient.bucketExists(BucketExistsArgs.builder().bucket(minioConfig.getBucket_name()).build());
