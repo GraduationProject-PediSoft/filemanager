@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    hostname: minio
+    networks:
+      - tesis
+  file-manager:
+    build: .
+    hostname: filemanager
+    networks:
+      - tesis
+    environment:
+      MINIO_USERNAME: ${MINIO_USERNAME}
+      MINIO_SECRET: ${MINIO_SECRET}
+      MINIO_URL: ${MINIO_URL}
+    ports:
+      - "8080:8080"
+
+
+
+networks:
+  tesis:
+    driver: bridge
+    external: true
